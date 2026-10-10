@@ -1,0 +1,619 @@
+{% extends "core/base.html" %}
+
+{% block title %}CAMPUSLINK — Job Match | {{ job.company_name }} - {{ job.job_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .match-container {
+        max-width: 1060px;
+        margin: 32px auto;
+        padding: 0 20px;
+    }
+
+    .top-nav-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+
+    .btn-nav-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 18px;
+        background: #173f5f;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 13.5px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .btn-nav-link:hover {
+        background: #0b1f3a;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .btn-nav-twin {
+        background: #176b86;
+    }
+
+    .match-card {
+        background: white;
+        padding: 28px 32px;
+        margin-bottom: 24px;
+        border-radius: 6px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+        border: 1px solid #eef2f6;
+    }
+
+    .match-card h2 {
+        margin: 0 0 16px 0;
+        color: #0b1f3a;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* JOB OVERVIEW */
+    .job-title-large {
+        font-size: 26px;
+        font-weight: 800;
+        color: #0b1f3a;
+        margin-bottom: 4px;
+    }
+
+    .company-name-large {
+        font-size: 17px;
+        font-weight: 700;
+        color: #0284c7;
+        margin-bottom: 16px;
+    }
+
+    .meta-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-top: 14px;
+    }
+
+    .meta-item {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 12px 16px;
+        border-radius: 8px;
+    }
+
+    .meta-item strong {
+        display: block;
+        font-size: 11px;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .meta-item span {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .eval-badge {
+        display: inline-block;
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12.5px;
+        color: #334155;
+        font-weight: 600;
+        margin-top: 12px;
+    }
+
+    /* MATCH SCORE SHOWCASE */
+    .match-score-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .score-banner-box {
+        text-align: center;
+        padding: 24px;
+        background: #f0f7ff;
+        border-radius: 12px;
+        border: 1px solid #bfdbfe;
+    }
+
+    .score-huge {
+        font-size: 58px;
+        font-weight: 900;
+        color: #0284c7;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+
+    .score-banner-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .match-progress-track { height: 10px; margin: 12px auto 0; max-width: 360px; overflow: hidden; border-radius: 4px; background: #e3ebef; }
+    .match-progress-fill { height: 100%; background: #20a99b; }
+    .match-pill { display: inline-flex; align-items: center; min-height: 25px; padding: 4px 9px; border: 1px solid #d4e0e5; border-radius: 4px; background: #f3f6f7; color: #405563; font-size: 11px; font-weight: 750; }
+    .match-pill.open, .match-pill.eligible { border-color: #b9dfd7; background: #edf8f5; color: #174f47; }
+    .match-pill.closed, .match-pill.ineligible { border-color: #e4b8b1; background: #fbefed; color: #7e2c29; }
+    .match-pill.strong { margin-left: 6px; border-color: #a8c8d4; background: #eef6f8; color: #25576b; }
+    .match-card { border-color: #dce5ea; border-radius: 6px; box-shadow: none; }
+    .eval-badge, .status-box, .skill-pill, .rationale-item { border-radius: 4px; }
+    .action-step-item { border-radius: 5px; }
+    .step-circle { border-radius: 4px; }
+
+    /* ELIGIBILITY STATUS BADGES */
+    .status-box {
+        padding: 14px 18px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 14px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .status-success {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .status-danger {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .status-warning {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+    }
+
+    /* SKILL TAGS */
+    .skills-flex {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .skill-pill {
+        padding: 6px 14px;
+        border-radius: 18px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .skill-matched {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .skill-missing {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    /* 2 COLUMNS FOR STRENGTHS AND GAPS */
+    .columns-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .list-item-bullet {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 10px 14px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        font-size: 13.5px;
+        color: #334155;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+    }
+
+    /* WHY THIS MATCH EXISTS */
+    .rationale-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .rationale-item {
+        background: #f8fafc;
+        border-left: 4px solid #0284c7;
+        padding: 14px 18px;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #334155;
+        line-height: 1.5;
+    }
+
+    /* WHAT SHOULD I IMPROVE */
+    .action-step-item {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .step-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #173f5f;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .step-content h4 {
+        margin: 0 0 4px 0;
+        font-size: 15px;
+        color: #0b1f3a;
+    }
+
+    .step-content p {
+        margin: 0;
+        font-size: 13.5px;
+        color: #475569;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+        .meta-grid, .match-score-grid, .columns-2 {
+            grid-template-columns: 1fr;
+        }
+        .match-container { margin-top: 20px; padding: 0 14px; }
+        .match-card { padding: 20px; }
+        .score-huge { font-size: 48px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="match-container">
+
+    <!-- TOP NAVIGATION -->
+    <div class="top-nav-bar">
+        <a href="{% url 'student_dashboard' %}#jobs" class="btn-nav-link">
+            ← Back to Jobs
+        </a>
+
+        {% if student %}
+            <a href="{% url 'career_twin' %}" class="btn-nav-link btn-nav-twin">
+                View Career Twin
+            </a>
+        {% endif %}
+    </div>
+
+    {% if not job %}
+        <div class="match-card">
+            <h2>Job unavailable</h2>
+            <div class="status-box status-danger">
+                {{ error }}
+            </div>
+            <p>Please register or populate a student record first through the Admin Portal.</p>
+            <a href="/admin/core/student/add/" class="btn-nav-link">+ Add Student in Admin</a>
+        </div>
+    {% else %}
+
+        <!-- 1. JOB OVERVIEW -->
+        <div class="match-card">
+            <div class="job-title-large">{{ job.job_title }}</div>
+            <div class="company-name-large">{{ job.company_name }}</div>
+            <div><span class="match-pill {% if job.status == 'CLOSED' %}closed{% else %}open{% endif %}">{{ job.get_status_display }}</span>{% if eligible %}<span class="match-pill eligible">Eligible</span>{% elif student %}<span class="match-pill ineligible">Not eligible</span>{% endif %}{% if student and skill_match >= 80 %}<span class="match-pill strong">Strong skill match</span>{% endif %}</div>
+
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <strong>Placement Location</strong>
+                    <span>{{ job.location|default:"Not specified" }}</span>
+                </div>
+                <div class="meta-item">
+                    <strong>Package (CTC)</strong>
+                    <span>{{ job.package|default:"Competitive" }}</span>
+                </div>
+                <div class="meta-item">
+                    <strong>Minimum CGPA</strong>
+                    <span>{{ job.minimum_cgpa }} / 10.0</span>
+                </div>
+                <div class="meta-item">
+                    <strong>Maximum Backlogs</strong>
+                    <span>{{ job.maximum_backlogs }} Allowed</span>
+                </div>
+                <div class="meta-item">
+                    <strong>Application deadline</strong>
+                    <span>{{ job.deadline|date:"M j, Y"|default:"Not set" }}</span>
+                </div>
+                <div class="meta-item">
+                    <strong>Drive date</strong>
+                    <span>{{ job.drive_date|date:"M j, Y"|default:"Not set" }}</span>
+                </div>
+            </div>
+
+            {% if job.description %}
+                <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #f1f5f9; font-size: 14px; color: #475569; line-height: 1.55;">
+                    <strong style="color: #0b1f3a;">Role Description:</strong> {{ job.description }}
+                </div>
+            {% endif %}
+
+            {% if student %}<div class="eval-badge">
+                Evaluating candidate: <strong>{{ student.name }}</strong> &bull; {{ student.branch }} (Semester {{ student.semester }}) &bull; CGPA: {{ student.cgpa }}
+            </div>{% endif %}
+
+            {% if student %}
+                {% if application %}
+                    <div class="status-box status-success" style="margin-top: 18px;">Application status: <strong>{{ application.get_status_display }}</strong></div>
+                {% elif job.status == "CLOSED" %}
+                    <div class="status-box status-danger" style="margin-top: 18px;">This job is closed and is no longer accepting applications.</div>
+                {% elif eligible %}
+                    <form method="post" action="{% url 'apply_to_job' job.id %}" style="margin-top: 18px;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-nav-link">Apply Now</button>
+                    </form>
+                {% else %}
+                    <div class="status-box status-warning" style="margin-top: 18px;">You are not eligible to apply yet. Review the eligibility and improvement details below.</div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        {% if student %}
+        <!-- 2. MATCH SCORE SHOWCASE -->
+        <div class="match-card">
+            <h2><span>📊</span> Placement Compatibility Breakdown</h2>
+
+            <div class="match-score-grid">
+                <div class="score-banner-box">
+                    <div class="score-huge">{{ skill_match }}%</div>
+                    <div class="score-banner-label">Job Skill Match Score</div>
+                    <div class="match-progress-track" role="img" aria-label="Skill match {{ skill_match }} percent"><div class="match-progress-fill" style="width: {{ skill_match }}%;"></div></div>
+                    <p style="margin: 8px 0 0 0; font-size: 13px; color: #64748b;">
+                        {{ matched_skills|length }} matched · {{ missing_skills|length }} gaps
+                    </p>
+                </div>
+
+                <div class="score-banner-box" style="background: #f7faf9; border-color: #c9ded8;">
+                    <div class="score-huge" style="color: #166534;">{{ readiness_score }}%</div>
+                    <div class="score-banner-label" style="color: #166534;">Student 360° Readiness Index</div>
+                    <p style="margin: 8px 0 0 0; font-size: 13px; color: #166534; font-weight: 600;">
+                        {{ readiness_level }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ELIGIBILITY CRITERIA BREAKDOWN -->
+        <div class="match-card">
+            <h2><span>📋</span> Academic &amp; Drive Eligibility Check</h2>
+
+            {% if cgpa_eligible %}
+                <div class="status-box status-success">
+                    <span>✓</span>
+                    <div>
+                        <strong>CGPA Requirement: Satisfied</strong>
+                        <div style="font-size: 13px; font-weight: 400; opacity: 0.9;">
+                            Candidate CGPA of {{ student.cgpa }} meets the minimum requirement of {{ job.minimum_cgpa }}.
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="status-box status-danger">
+                    <span>✗</span>
+                    <div>
+                        <strong>CGPA Requirement: Not Satisfied</strong>
+                        <div style="font-size: 13px; font-weight: 400; opacity: 0.9;">
+                            Candidate CGPA of {{ student.cgpa }} is below the minimum required {{ job.minimum_cgpa }} (Deficit: {{ cgpa_gap }} pts).
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if backlog_eligible %}
+                <div class="status-box status-success">
+                    <span>✓</span>
+                    <div>
+                        <strong>Backlog Requirement: Satisfied</strong>
+                        <div style="font-size: 13px; font-weight: 400; opacity: 0.9;">
+                            Candidate active backlogs ({{ student.backlogs }}) are within the allowable company threshold ({{ job.maximum_backlogs }}).
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="status-box status-danger">
+                    <span>✗</span>
+                    <div>
+                        <strong>Backlog Requirement: Not Satisfied</strong>
+                        <div style="font-size: 13px; font-weight: 400; opacity: 0.9;">
+                            Candidate has {{ student.backlogs }} active backlog(s), which exceeds the company cutoff of {{ job.maximum_backlogs }}.
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if eligible %}
+                <div class="status-box status-success" style="font-size: 15px;">
+                    <span>✓</span>
+                    <div>
+                        <strong>Overall Status: Currently Eligible for this Placement Drive</strong>
+                        <div style="font-size: 13px; font-weight: 400; opacity: 0.9;">
+                            All academic cutoffs cleared and skill compatibility is at or above the 50% threshold.
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="status-box status-warning" style="font-size: 15px;">
+                    <span>⚠</span>
+                    <div>
+                        <strong>Overall Status: Improvement Required</strong>
+                        <div style="font-size: 13px; font-weight: 400; opacity: 0.9;">
+                            Placement shortlisting threshold requires CGPA eligibility, backlog clearance, and ≥ 50% skill compatibility.
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- 4. SKILLS & GAPS BREAKDOWN -->
+        <div class="match-card">
+            <h2><span>🧬</span> Required Skills Evaluation</h2>
+
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin: 0 0 10px 0; color: #166534; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    ✓ Matched Skills ({{ matched_skills|length }})
+                </h4>
+                {% if matched_skills %}
+                    <div class="skills-flex">
+                        {% for skill in matched_skills %}
+                            <span class="skill-pill skill-matched">✓ {{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p style="color: #64748b; font-size: 13.5px; margin: 0;">No matching skills detected in profile.</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <h4 style="margin: 0 0 10px 0; color: #991b1b; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    ✗ Missing Skill Gaps ({{ missing_skills|length }})
+                </h4>
+                {% if missing_skills %}
+                    <div class="skills-flex">
+                        {% for skill in missing_skills %}
+                            <span class="skill-pill skill-missing">✗ {{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p style="color: #166534; font-size: 13.5px; margin: 0; font-weight: 600;">
+                        Excellent! Candidate profile satisfies 100% of required skills.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 5. STUDENT STRENGTHS & PRIMARY GAPS -->
+        <div class="columns-2">
+            <div class="match-card">
+                <h2><span>💪</span> Student Strengths for this Role</h2>
+                {% if student_strengths %}
+                    {% for item in student_strengths %}
+                        <div class="list-item-bullet">
+                            <span style="color: #166534; font-weight: 700;">✓</span> {{ item }}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="color: #64748b; font-size: 13.5px;">Baseline academic eligibility verified.</p>
+                {% endif %}
+            </div>
+
+            <div class="match-card">
+                <h2><span>🔍</span> Primary Skill Gaps</h2>
+                {% if primary_skill_gaps %}
+                    {% for item in primary_skill_gaps %}
+                        <div class="list-item-bullet">
+                            <span style="color: #991b1b; font-weight: 700;">✗</span> {{ item }}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="list-item-bullet" style="color: #166534;">
+                        ✓ Zero missing skill gaps for this job role.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 6. WHY THIS MATCH EXISTS -->
+        <div class="match-card">
+            <h2><span>💡</span> Why This Match Result Exists</h2>
+            <p style="color: #64748b; font-size: 13.5px; margin-top: -6px; margin-bottom: 16px;">
+                Deterministic explanation derived directly from active database records:
+            </p>
+
+            <div class="rationale-list">
+                {% for factor in why_factors %}
+                    <div class="rationale-item">
+                        {{ factor }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 7. WHAT SHOULD I IMPROVE? -->
+        <div class="match-card">
+            <h2><span>🚀</span> What Should I Improve to Qualify?</h2>
+            <p style="color: #64748b; font-size: 13.5px; margin-top: -6px; margin-bottom: 18px;">
+                Actionable steps derived specifically from unfulfilled criteria on this placement drive:
+            </p>
+
+            {% for step in improvement_steps %}
+                <div class="action-step-item">
+                    <div class="step-circle">{{ step.step }}</div>
+                    <div class="step-content">
+                        <h4>{{ step.title }}</h4>
+                        <p>{{ step.description }}</p>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="status-box status-success">
+                    ✓ You are already fully qualified for this role! Focus on mock interview rehearsal.
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- BOTTOM NAV -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 24px 0;">
+            <a href="{% url 'student_dashboard' %}" class="btn-nav-link">
+                ← Back to Student Dashboard
+            </a>
+            <a href="{% url 'career_twin' %}" class="btn-nav-link btn-nav-twin">
+                🚀 Open Career Twin Persona →
+            </a>
+        </div>
+
+        {% else %}
+            <div class="match-card">
+                <h2>Student match unavailable</h2>
+                {% if profile_link_required %}
+                    <p>Your STUDENT account has no linked profile. Contact your campus administrator to link it before viewing a personal match or applying.</p>
+                {% else %}
+                    <p>Sign in with a STUDENT account linked to a student profile to view your eligibility, match details, and application action.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+    {% endif %}
+
+</div>
+{% endblock %}

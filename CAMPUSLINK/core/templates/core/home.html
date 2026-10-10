@@ -1,0 +1,74 @@
+{% extends "core/base.html" %}
+
+{% block title %}CAMPUSLINK | Intelligent Campus Placement Platform{% endblock %}
+{% block extra_css %}
+<style>
+    .home-page { width: min(1180px, 94%); margin: 0 auto; }
+    .home-hero { min-height: 410px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(240px, .8fr); align-items: center; gap: 48px; padding: 58px 4px 44px; }
+    .home-kicker { margin: 0 0 12px; color: #087f72; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+    .home-hero h1 { margin: 0; color: var(--campus-navy); font-size: clamp(38px, 5vw, 62px); line-height: 1.03; }
+    .home-hero h1 span { color: var(--campus-teal); }
+    .home-hero-copy { max-width: 650px; margin: 18px 0 22px; color: #506170; font-size: 17px; line-height: 1.6; }
+    .home-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+    .home-button { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; padding: 10px 15px; border: 1px solid var(--campus-blue); border-radius: 4px; background: var(--campus-blue); color: #fff; font-size: 14px; font-weight: 700; text-decoration: none; }
+    .home-button:hover { background: var(--campus-navy); color: #fff; }
+    .home-button.secondary { background: transparent; color: var(--campus-blue); }
+    .home-button.secondary:hover { background: #eaf3f5; }
+    .home-workflow { padding: 22px; border: 1px solid var(--campus-line); border-top: 4px solid var(--campus-teal); border-radius: 6px; background: #fff; }
+    .home-workflow h2 { margin: 0 0 15px; color: var(--campus-navy); font-size: 16px; }
+    .workflow-step { display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding: 11px 0; border-top: 1px solid #edf1f3; }
+    .workflow-step b { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 50%; background: #e0f4ef; color: #146454; font-size: 12px; }
+    .workflow-step strong { display: block; color: #24394a; font-size: 13px; }
+    .workflow-step span { display: block; margin-top: 3px; color: #607181; font-size: 12px; line-height: 1.45; }
+    .home-features { padding: 20px 0 44px; border-top: 1px solid #d8e2e6; }
+    .home-features h2 { margin: 0 0 7px; color: var(--campus-navy); font-size: 22px; }
+    .home-features-intro { margin: 0 0 17px; color: #607181; font-size: 14px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 11px; }
+    .feature-item { padding: 17px; border: 1px solid var(--campus-line); border-radius: 5px; background: #fff; }
+    .feature-item h3 { margin: 0 0 6px; color: var(--campus-blue); font-size: 15px; }
+    .feature-item p { min-height: 40px; margin: 0 0 10px; color: #5b6c78; font-size: 13px; line-height: 1.5; }
+    .feature-item a { font-size: 13px; font-weight: 700; }
+    @media (max-width: 760px) { .home-hero { min-height: auto; grid-template-columns: 1fr; gap: 25px; padding: 42px 0 30px; } .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 480px) { .home-hero h1 { font-size: 38px; } .home-hero-copy { font-size: 15px; } .feature-grid { grid-template-columns: 1fr; } .feature-item p { min-height: auto; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="home-page">
+    <section class="home-hero" aria-labelledby="home-title">
+        <div>
+            <p class="home-kicker">From student readiness to placement workflow</p>
+            <h1 id="home-title">CAMPUS<span>LINK</span></h1>
+            <p class="home-hero-copy">Intelligent Campus Placement Platform. Explore CAMPUSLINK to review real job requirements, explainable skill and eligibility matches, applications, and placement activity from one campus workspace.</p>
+            <div class="home-actions">
+                {% if user.is_authenticated %}
+                    {% for group in user.groups.all %}
+                        {% if group.name == "STUDENT" %}<a class="home-button" href="{% url 'student_dashboard' %}">Explore jobs</a>
+                        {% elif group.name == "RECRUITER" %}<a class="home-button" href="{% url 'recruiter_dashboard' %}">Recruiter dashboard</a>
+                        {% elif group.name == "TPO" %}<a class="home-button" href="{% url 'tpo_dashboard' %}">TPO dashboard</a>{% endif %}
+                    {% endfor %}
+                {% else %}<a class="home-button" href="{% url 'login' %}">Sign in</a>{% endif %}
+            </div>
+        </div>
+        <aside class="home-workflow" aria-label="Placement workflow">
+            <h2>Placement workflow</h2>
+            <div class="workflow-step"><b>1</b><div><strong>Discover roles</strong><span>Review current requirements and eligibility criteria.</span></div></div>
+            <div class="workflow-step"><b>2</b><div><strong>Understand your match</strong><span>See exact skill overlaps, gaps, and rule-based explanations.</span></div></div>
+            <div class="workflow-step"><b>3</b><div><strong>Track applications</strong><span>Students apply; recruiters manage application status.</span></div></div>
+        </aside>
+    </section>
+    <section class="home-features" aria-labelledby="platform-tools">
+        <h2 id="platform-tools">Tools for the placement cycle</h2>
+        <p class="home-features-intro">Each view reflects existing CAMPUSLINK records and role permissions.</p>
+        <div class="feature-grid">
+            <article class="feature-item"><h3>Job Matching</h3><p>Compare recorded skills, CGPA, and backlog requirements with a transparent explanation.</p>{% for group in user.groups.all %}{% if group.name == "STUDENT" %}<a href="{% url 'student_dashboard' %}">Explore jobs</a>{% endif %}{% endfor %}</article>
+            <article class="feature-item"><h3>Career Twin</h3><p>Review the existing readiness profile, skill gaps, and deterministic recommendations.</p>{% for group in user.groups.all %}{% if group.name == "STUDENT" %}<a href="{% url 'career_twin' %}">Open Career Twin</a>{% endif %}{% endfor %}</article>
+            <article class="feature-item"><h3>Student Applications</h3><p>Apply to eligible open jobs and review application status.</p>{% for group in user.groups.all %}{% if group.name == "STUDENT" %}<a href="{% url 'student_applications' %}">My Applications</a>{% endif %}{% endfor %}</article>
+            <article class="feature-item"><h3>Recruiter Management</h3><p>Manage owned jobs and review applicants through the recruiter workspace.</p>{% for group in user.groups.all %}{% if group.name == "RECRUITER" %}<a href="{% url 'recruiter_dashboard' %}">Recruiter portal</a>{% endif %}{% endfor %}</article>
+            <article class="feature-item"><h3>TPO Management</h3><p>Review student, job, and application records with read-only placement oversight.</p>{% for group in user.groups.all %}{% if group.name == "TPO" %}<a href="{% url 'tpo_dashboard' %}">TPO portal</a>{% endif %}{% endfor %}</article>
+            <article class="feature-item"><h3>Placement Analytics</h3><p>Explore descriptive summaries calculated from current database records.</p>{% for group in user.groups.all %}{% if group.name == "TPO" %}<a href="{% url 'tpo_analytics' %}">TPO analytics</a>{% endif %}{% endfor %}</article>
+        </div>
+    </section>
+</div>
+{% endblock %}
+

@@ -1,0 +1,20 @@
+{% extends "core/base.html" %}
+{% block title %}Jobs | TPO | CAMPUSLINK{% endblock %}
+{% block extra_css %}{% include "core/tpo_styles.html" %}{% endblock %}
+{% block content %}
+<div class="tpo-wrap">
+    <header class="tpo-hero"><h1>Placement jobs</h1><p>All jobs currently recorded in CAMPUSLINK. Ownership is displayed, not changed here.</p></header>
+    <nav class="tpo-nav" aria-label="TPO management"><a href="{% url 'tpo_dashboard' %}">Overview</a><a href="{% url 'tpo_analytics' %}">Analytics</a><a href="{% url 'tpo_students' %}">Students</a><a href="{% url 'tpo_applications' %}">Applications</a></nav>
+    <section class="tpo-panel">
+        {% if jobs %}<div class="tpo-table-wrap"><table class="tpo-table">
+            <thead><tr><th>Company</th><th>Job title</th><th>Recruiter</th><th>Status</th><th>Deadline</th><th>Drive date</th><th>Applicants</th></tr></thead>
+            <tbody>{% for job in jobs %}<tr>
+                <td>{{ job.company_name }}</td><td><a href="{% url 'tpo_job_detail' job.id %}">{{ job.job_title }}</a></td>
+                <td>{% if job.recruiter %}{{ job.recruiter.username }}{% else %}Unassigned{% endif %}</td>
+                <td><span class="tpo-badge {% if job.status == 'CLOSED' %}closed{% endif %}">{{ job.get_status_display }}</span></td>
+                <td>{{ job.deadline|date:"M j, Y"|default:"Not set" }}</td><td>{{ job.drive_date|date:"M j, Y"|default:"Not set" }}</td><td>{{ job.applicant_count }}</td>
+            </tr>{% endfor %}</tbody>
+        </table></div>{% else %}<div class="tpo-empty">No jobs are available.</div>{% endif %}
+    </section>
+</div>
+{% endblock %}

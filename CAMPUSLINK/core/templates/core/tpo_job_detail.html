@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+{% block title %}{{ job.job_title }} | TPO | CAMPUSLINK{% endblock %}
+{% block extra_css %}{% include "core/tpo_styles.html" %}{% endblock %}
+{% block content %}
+<div class="tpo-wrap">
+    <header class="tpo-hero"><h1>{{ job.job_title }}</h1><p>{{ job.company_name }}{% if job.location %} · {{ job.location }}{% endif %}</p></header>
+    <nav class="tpo-nav" aria-label="TPO management"><a href="{% url 'tpo_jobs' %}">Jobs</a><a href="{% url 'tpo_analytics' %}">Analytics</a><a href="{% url 'tpo_applications' %}?job={{ job.id }}">View applications</a><a href="{% url 'tpo_dashboard' %}">Overview</a></nav>
+    <section class="tpo-panel"><h2>Job record</h2><div class="tpo-detail-grid">
+        <div class="tpo-detail-item"><span>Company</span><strong>{{ job.company_name }}</strong></div>
+        <div class="tpo-detail-item"><span>Job title</span><strong>{{ job.job_title }}</strong></div>
+        <div class="tpo-detail-item"><span>Recruiter</span><strong>{% if job.recruiter %}{{ job.recruiter.username }}{% else %}Unassigned{% endif %}</strong></div>
+        <div class="tpo-detail-item"><span>Status</span><strong>{{ job.get_status_display }}</strong></div>
+        <div class="tpo-detail-item"><span>Deadline</span><strong>{{ job.deadline|date:"M j, Y"|default:"Not set" }}</strong></div>
+        <div class="tpo-detail-item"><span>Drive date</span><strong>{{ job.drive_date|date:"M j, Y"|default:"Not set" }}</strong></div>
+        <div class="tpo-detail-item"><span>Minimum CGPA</span><strong>{{ job.minimum_cgpa }}</strong></div>
+        <div class="tpo-detail-item"><span>Maximum backlogs</span><strong>{{ job.maximum_backlogs }}</strong></div>
+        <div class="tpo-detail-item"><span>Applicants</span><strong>{{ job.applicant_count }}</strong></div>
+        <div class="tpo-detail-item"><span>Required skills</span><strong>{{ job.required_skills }}</strong></div>
+    </div></section>
+    <section class="tpo-panel"><h2>Description</h2><p>{{ job.description|default:"No description provided."|linebreaksbr }}</p></section>
+</div>
+{% endblock %}

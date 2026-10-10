@@ -1,0 +1,116 @@
+{% extends "core/base.html" %}
+{% block title %}Placement Analytics | TPO | CAMPUSLINK{% endblock %}
+{% block extra_css %}{% include "core/tpo_styles.html" %}
+<style>
+    .analytics-section-title { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin:26px 0 12px; color:#0b1f3a; font-size:20px; }
+    .analytics-section-title small { color:#607483; font-size:12px; font-weight:500; }
+    .analytics-note { margin:0 0 12px; padding:11px 13px; border-left:3px solid #20c7b5; background:#edf8f6; color:#31594f; font-size:13px; }
+    .analytics-progress { height:9px; margin-top:8px; overflow:hidden; border-radius:5px; background:#e9eff2; }
+    .analytics-progress span { display:block; height:100%; border-radius:inherit; background:#20a99b; }
+    .analytics-small { display:block; margin-top:5px; color:#607483; font-size:11px; }
+    .analytics-two-col { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    @media(max-width:700px){.analytics-two-col{grid-template-columns:1fr}.analytics-section-title{align-items:flex-start;flex-direction:column}}
+</style>
+{% endblock %}
+{% block content %}
+<div class="tpo-wrap">
+    <header class="tpo-hero"><h1>Placement Intelligence</h1><p>Descriptive analytics calculated from current student, job, and application records.</p></header>
+    <nav class="tpo-nav" aria-label="TPO management"><a href="{% url 'tpo_dashboard' %}">TPO overview</a><a href="{% url 'tpo_students' %}">Students</a><a href="{% url 'tpo_jobs' %}">Jobs</a><a href="{% url 'tpo_applications' %}">Applications</a></nav>
+
+    <h2 class="analytics-section-title">Student metrics</h2>
+    {% if not has_application_data %}<p class="analytics-note">No application data available yet. Application-related student counts and rates below reflect the current absence of application records.</p>{% endif %}
+    <section class="tpo-metrics" aria-label="Student metrics">
+        <div class="tpo-metric"><span>Total students</span><strong>{{ total_students }}</strong></div>
+        <div class="tpo-metric"><span>Students with applications</span><strong>{{ students_with_applications }}</strong></div>
+        <div class="tpo-metric"><span>Students without applications</span><strong>{{ students_without_applications }}</strong></div>
+        <div class="tpo-metric"><span>Students shortlisted</span><strong>{{ students_shortlisted }}</strong></div>
+        <div class="tpo-metric"><span>Students rejected</span><strong>{{ students_rejected }}</strong></div>
+        <div class="tpo-metric"><span>Students with offers</span><strong>{{ students_with_offers }}</strong></div>
+        <div class="tpo-metric"><span>Application rate</span><strong>{{ application_rate }}%</strong></div>
+        <div class="tpo-metric"><span>Offer rate, applicants</span><strong>{{ offer_rate_applicants }}%</strong></div>
+        <div class="tpo-metric"><span>Offer rate, all students</span><strong>{{ offer_rate_all_students }}%</strong></div>
+    </section>
+
+    <h2 class="analytics-section-title">Job metrics</h2>
+    <section class="tpo-metrics" aria-label="Job metrics">
+        <div class="tpo-metric"><span>Total jobs</span><strong>{{ total_jobs }}</strong></div>
+        <div class="tpo-metric"><span>Open jobs</span><strong>{{ open_jobs }}</strong></div>
+        <div class="tpo-metric"><span>Closed jobs</span><strong>{{ closed_jobs }}</strong></div>
+        <div class="tpo-metric"><span>Jobs with deadlines</span><strong>{{ jobs_with_deadlines }}</strong></div>
+        <div class="tpo-metric"><span>Jobs with drive dates</span><strong>{{ jobs_with_drive_dates }}</strong></div>
+        <div class="tpo-metric"><span>Companies represented</span><strong>{{ companies_represented }}</strong></div>
+    </section>
+
+    <h2 class="analytics-section-title">Application funnel <small>Percentages use all application rows as denominator.</small></h2>
+    <section class="tpo-panel">
+        {% if has_application_data %}
+            <div class="tpo-table-wrap"><table class="tpo-table"><thead><tr><th>Status</th><th>Applications</th><th>Share</th></tr></thead><tbody>
+                {% for item in application_funnel %}<tr><td>{{ item.label }}</td><td>{{ item.count }}</td><td>{{ item.percentage }}%<div class="analytics-progress"><span style="width:{{ item.percentage }}%"></span></div></td></tr>{% endfor %}
+            </tbody></table></div>
+        {% else %}<div class="tpo-empty">No application data available yet.</div>{% endif %}
+    </section>
+
+    <h2 class="analytics-section-title">Placement outcomes</h2>
+    <section class="tpo-panel">
+        {% if has_application_data %}<div class="analytics-two-col">
+            <div class="tpo-detail-item"><span>Offered applications</span><strong>{{ offered_applications }}</strong><small class="analytics-small">Application rows with OFFERED status.</small></div>
+            <div class="tpo-detail-item"><span>Students with at least one offer</span><strong>{{ students_with_offers }}</strong><small class="analytics-small">Distinct students, counted once each.</small></div>
+            <div class="tpo-detail-item"><span>Offer rate among applicants</span><strong>{{ offer_rate_applicants }}%</strong><small class="analytics-small">Students with offers / students with any application.</small></div>
+            <div class="tpo-detail-item"><span>Offer rate among all students</span><strong>{{ offer_rate_all_students }}%</strong><small class="analytics-small">Students with offers / all student records.</small></div>
+        </div>{% else %}<div class="tpo-empty">No application data available yet.</div>{% endif %}
+    </section>
+
+    <h2 class="analytics-section-title">Top required skills <small>Each skill is counted at most once per job.</small></h2>
+    <section class="tpo-panel">
+        {% if top_required_skills %}<div class="tpo-table-wrap"><table class="tpo-table"><thead><tr><th>Skill</th><th>Number of jobs requiring it</th></tr></thead><tbody>
+            {% for row in top_required_skills %}<tr><td>{{ row.skill }}</td><td>{{ row.job_count }}</td></tr>{% endfor %}
+        </tbody></table></div>{% else %}<div class="tpo-empty">No job skill requirements are available yet.</div>{% endif %}
+    </section>
+
+    <h2 class="analytics-section-title">Student skill gaps <small>Exact normalized skill names; each missing skill is counted per student/job pair.</small></h2>
+    <section class="tpo-panel">
+        {% if not skill_gap_is_aggregate %}
+            <div class="tpo-empty">Insufficient data for aggregate analysis. At least two students and two jobs are needed for this cross-record summary.</div>
+        {% elif frequent_skill_gaps %}
+            <div class="tpo-table-wrap"><table class="tpo-table"><thead><tr><th>Missing skill</th><th>Student/job pairs</th></tr></thead><tbody>
+                {% for row in frequent_skill_gaps %}<tr><td>{{ row.skill }}</td><td>{{ row.pair_count }}</td></tr>{% endfor %}
+            </tbody></table></div>
+        {% else %}<div class="tpo-empty">No missing required skills were found across evaluated pairs.</div>{% endif %}
+    </section>
+
+    <h2 class="analytics-section-title">Match quality <small>Existing evaluate_job results; high compatibility is explicitly defined as skill match ≥ 80%.</small></h2>
+    <section class="tpo-panel">
+        {% if match_is_aggregate %}<div class="tpo-metrics">
+            <div class="tpo-metric"><span>Evaluated student/job pairs</span><strong>{{ evaluated_pairs }}</strong></div>
+            <div class="tpo-metric"><span>Average skill match</span><strong>{{ average_match_score }}%</strong></div>
+            <div class="tpo-metric"><span>Highly compatible (≥80%)</span><strong>{{ highly_compatible_matches }}</strong></div>
+            <div class="tpo-metric"><span>Eligible matches</span><strong>{{ eligible_matches }}</strong></div>
+            <div class="tpo-metric"><span>Ineligible matches</span><strong>{{ ineligible_matches }}</strong></div>
+        </div>{% elif has_matching_data %}<div class="tpo-empty">Insufficient data for aggregate match analysis. {{ evaluated_pairs }} student/job pair is available, so aggregate match quality is not presented.</div>{% else %}<div class="tpo-empty">No student/job pairs are available for matching analysis.</div>{% endif %}
+    </section>
+
+    <h2 class="analytics-section-title">Readiness analysis <small>Existing unweighted four-score readiness calculation; Career Twin bands.</small></h2>
+    <section class="tpo-panel">
+        {% if readiness_by_student %}
+            <p>Average readiness: <strong>{{ average_readiness }}%</strong> · Students needing improvement (&lt;60): <strong>{{ students_needing_improvement }}</strong></p>
+            <div class="tpo-table-wrap"><table class="tpo-table"><thead><tr><th>Readiness band</th><th>Students</th></tr></thead><tbody>
+                {% for band in readiness_distribution %}<tr><td>{{ band.label }}</td><td>{{ band.count }}</td></tr>{% endfor %}
+            </tbody></table></div>
+        {% else %}<div class="tpo-empty">No student readiness data available.</div>{% endif %}
+    </section>
+
+    <h2 class="analytics-section-title">Branch and academic analysis</h2>
+    <section class="tpo-panel">
+        {% if branch_analysis %}<div class="tpo-table-wrap"><table class="tpo-table"><thead><tr><th>Branch</th><th>Students</th><th>Average CGPA</th><th>Applications</th><th>Offers</th></tr></thead><tbody>
+            {% for row in branch_analysis %}<tr><td>{{ row.branch }}</td><td>{{ row.student_count }}</td><td>{{ row.average_cgpa|default:"Not available" }}</td><td>{{ row.application_count }}</td><td>{{ row.offer_count }}</td></tr>{% endfor %}
+        </tbody></table></div>{% else %}<div class="tpo-empty">No branch or academic records available.</div>{% endif %}
+    </section>
+
+    <h2 class="analytics-section-title">Company and job analysis</h2>
+    <section class="tpo-panel">
+        {% if company_analysis %}<div class="tpo-table-wrap"><table class="tpo-table"><thead><tr><th>Company</th><th>Jobs</th><th>Open jobs</th><th>Applications</th><th>Offers</th></tr></thead><tbody>
+            {% for row in company_analysis %}<tr><td>{{ row.company_name|default:"Not specified" }}</td><td>{{ row.job_count }}</td><td>{{ row.open_job_count }}</td><td>{{ row.application_count }}</td><td>{{ row.offer_count }}</td></tr>{% endfor %}
+        </tbody></table></div>{% else %}<div class="tpo-empty">No company/job records available.</div>{% endif %}
+    </section>
+</div>
+{% endblock %}

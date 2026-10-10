@@ -1,0 +1,35 @@
+{% extends "core/base.html" %}
+
+{% block title %}Recruiter Dashboard | CAMPUSLINK{% endblock %}
+{% block extra_css %}{% include "core/recruiter_styles.html" %}{% endblock %}
+
+{% block content %}
+<div class="recruiter-page">
+    <header class="recruiter-heading">
+        <div><h1>Recruiter dashboard</h1><p>Hiring activity across jobs owned by your account.</p></div>
+        <div class="recruiter-actions"><a class="recruiter-btn secondary" href="{% url 'recruiter_jobs' %}">My jobs</a><a class="recruiter-btn" href="{% url 'recruiter_job_create' %}">Create job</a></div>
+    </header>
+    <section class="recruiter-grid" aria-label="Recruiter statistics">
+        <div class="recruiter-stat"><span>Total Jobs</span><strong>{{ total_jobs }}</strong></div>
+        <div class="recruiter-stat"><span>Open Jobs</span><strong>{{ open_jobs }}</strong></div>
+        <div class="recruiter-stat"><span>Closed Jobs</span><strong>{{ closed_jobs }}</strong></div>
+        <div class="recruiter-stat"><span>Total Applications</span><strong>{{ total_applications }}</strong></div>
+        <div class="recruiter-stat"><span>Shortlisted</span><strong>{{ shortlisted_count }}</strong>{% if not shortlisted_count %}<small>No shortlisted applicants yet</small>{% endif %}</div>
+        <div class="recruiter-stat"><span>Rejected</span><strong>{{ rejected_count }}</strong></div>
+        <div class="recruiter-stat"><span>Offered</span><strong>{{ offered_count }}</strong></div>
+    </section>
+    <section class="recruiter-panel">
+        <h2>Recent jobs</h2>
+        {% if jobs %}
+            <div class="recruiter-table-wrap"><table class="recruiter-table">
+                <thead><tr><th>Company / role</th><th>Status</th><th>Applicants</th><th>Deadline</th><th></th></tr></thead>
+                <tbody>{% for job in jobs %}
+                    <tr><td><strong>{{ job.company_name }}</strong><br>{{ job.job_title }}</td><td><span class="recruiter-badge {% if job.status == 'CLOSED' %}closed{% endif %}">{{ job.get_status_display }}</span></td><td>{{ job.applicant_count }}</td><td>{{ job.deadline|date:"M j, Y"|default:"Not set" }}</td><td><a href="{% url 'recruiter_job_detail' job.id %}">View</a></td></tr>
+                {% endfor %}</tbody>
+            </table></div>
+        {% else %}
+            <div class="recruiter-empty"><strong>No jobs yet</strong>Create your first job to start receiving applications.<p><a class="recruiter-btn" href="{% url 'recruiter_job_create' %}">Create job</a></p></div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

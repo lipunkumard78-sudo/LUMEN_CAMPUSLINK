@@ -1,0 +1,59 @@
+# Python virtual environments
+.venv/
+venv/
+CAMPUSLINK/venv/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.so
+.Python
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Local database (SQLite)
+db.sqlite3
+*.sqlite3
+*.sqlite3-journal
+*.db
+
+# Django generated files
+staticfiles/
+CAMPUSLINK/staticfiles/
+*.egg-info/
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# User uploads and media (unless explicitly versioned)
+media/
+CAMPUSLINK/media/
+
+# IDE and OS files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+
+# Temporary files
+tmp/
+temp/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Misc
+*.pid
+.env.password

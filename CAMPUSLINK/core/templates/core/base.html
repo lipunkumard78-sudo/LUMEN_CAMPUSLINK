@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CAMPUSLINK — From Student to Career{% endblock %}</title>
+
+    <style>
+        :root {
+            color-scheme: light;
+            --campus-navy: #0b1f3a;
+            --campus-blue: #173f5f;
+            --campus-teal: #20a99b;
+            --campus-teal-bright: #20c7b5;
+            --campus-ink: #1f2937;
+            --campus-muted: #526275;
+            --campus-line: #dce5ea;
+            --campus-paper: #ffffff;
+            --campus-canvas: #f4f7f8;
+            --campus-radius: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html { min-width: 320px; scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--campus-canvas);
+            color: var(--campus-ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a { color: #145b78; }
+        a:hover { color: var(--campus-teal); }
+
+        :focus-visible {
+            outline: 3px solid var(--campus-teal-bright);
+            outline-offset: 3px;
+        }
+
+        .main-navbar {
+            background: var(--campus-navy);
+            padding: 13px clamp(16px, 4vw, 48px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            gap: 24px;
+            border-bottom: 3px solid var(--campus-teal);
+        }
+
+        .brand-logo {
+            font-size: 22px;
+            font-weight: 800;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-logo span {
+            color: #20c7b5;
+        }
+
+        .brand-tag {
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(32, 199, 181, 0.15);
+            color: #20c7b5;
+            padding: 3px 8px;
+            border-radius: 3px;
+            border: 1px solid rgba(32, 199, 181, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .nav-links a {
+            color: #e2e8f0;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 10px;
+            border-radius: 4px;
+        }
+
+        .nav-links a:hover, .nav-links a:focus-visible { color: #fff; background: #173f5f; }
+
+        .nav-btn {
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .nav-btn-outline {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .nav-btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+            color: white;
+        }
+
+        .nav-btn-primary {
+            background: #20c7b5;
+            color: #0b1f3a !important;
+            border: none;
+        }
+
+        .nav-btn-primary:hover {
+            background: #19b2a1;
+        }
+
+        .content-wrapper { flex: 1; width: 100%; }
+
+        .site-messages {
+            width: min(1180px, 94%);
+            margin: 14px auto 0;
+        }
+
+        .site-message {
+            margin: 0 0 8px;
+            padding: 11px 14px;
+            border: 1px solid #b9dfd7;
+            border-left: 4px solid var(--campus-teal);
+            border-radius: 4px;
+            background: #edf8f5;
+            color: #174f47;
+        }
+
+        .site-message.error { border-color: #e4b8b1; border-left-color: #9b3b37; background: #fbefed; color: #7e2c29; }
+        .site-message.warning { border-color: #e8d19a; border-left-color: #996600; background: #fff8e8; color: #674800; }
+        .site-message.info { border-color: #bdd8e4; border-left-color: #176582; background: #eff7fa; color: #234f61; }
+
+        .nav-logout-form { display: inline-flex; margin: 0; }
+        .nav-logout-form button { font-family: inherit; }
+
+        .global-empty-state {
+            padding: 22px;
+            border: 1px dashed #b8cbd0;
+            border-radius: var(--campus-radius);
+            background: #f8fbfa;
+            color: var(--campus-muted);
+            text-align: center;
+        }
+
+        .main-footer {
+            text-align: center;
+            padding: 19px 16px;
+            background: var(--campus-navy);
+            color: #c1ccd5;
+            font-size: 12px;
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .main-footer strong {
+            color: #e2e8f0;
+        }
+
+        @media (max-width: 768px) {
+            .main-navbar {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .nav-links {
+                width: 100%;
+                justify-content: flex-start;
+                gap: 3px;
+            }
+            .nav-links a { padding: 8px; }
+        }
+
+        @media (max-width: 390px) {
+            .brand-logo { font-size: 20px; }
+            .nav-links { gap: 1px; }
+            .nav-links a { font-size: 12px; padding: 7px 6px; }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <nav class="main-navbar">
+        <a href="{% url 'home' %}" class="brand-logo">
+            CAMPUS<span>LINK</span>
+            <span class="brand-tag">360</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            {% if user.is_authenticated %}
+                {% for group in user.groups.all %}
+                    {% if group.name == "STUDENT" %}
+                        <a href="{% url 'student_dashboard' %}">Dashboard</a>
+                        <a href="{% url 'career_twin' %}">Career Twin</a>
+                        <a href="{% url 'student_dashboard' %}#jobs">Jobs</a>
+                        <a href="{% url 'student_applications' %}">My Applications</a>
+                    {% elif group.name == "RECRUITER" %}
+                        <a href="{% url 'recruiter_dashboard' %}">Recruiter Dashboard</a>
+                        <a href="{% url 'recruiter_jobs' %}">Jobs</a>
+                    {% elif group.name == "TPO" %}
+                        <a href="{% url 'tpo_dashboard' %}">TPO Dashboard</a>
+                        <a href="{% url 'tpo_students' %}">Students</a>
+                        <a href="{% url 'tpo_jobs' %}">Jobs</a>
+                        <a href="{% url 'tpo_applications' %}">Applications</a>
+                        <a href="{% url 'tpo_analytics' %}">Analytics</a>
+                    {% endif %}
+                {% endfor %}
+                <form method="post" action="{% url 'logout' %}" class="nav-logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="nav-btn nav-btn-outline">Log out</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Log in</a>
+            {% endif %}
+            {% if user.is_staff %}<a href="/admin/" class="nav-btn nav-btn-outline">Admin</a>{% endif %}
+        </div>
+    </nav>
+
+    <main class="content-wrapper">
+        {% if messages %}
+            <div class="site-messages" role="status">
+                {% for message in messages %}<p class="site-message {{ message.tags }}">{{ message }}</p>{% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="main-footer">CAMPUSLINK &copy; 2026 &bull; Intelligent Campus Placement Platform</footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

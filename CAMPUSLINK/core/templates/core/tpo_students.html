@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+{% block title %}Students | TPO | CAMPUSLINK{% endblock %}
+{% block extra_css %}{% include "core/tpo_styles.html" %}{% endblock %}
+{% block content %}
+<div class="tpo-wrap">
+    <header class="tpo-hero"><h1>Student records</h1><p>Academic and placement-readiness information from existing student profiles.</p></header>
+    <nav class="tpo-nav" aria-label="TPO management"><a href="{% url 'tpo_dashboard' %}">Overview</a><a href="{% url 'tpo_analytics' %}">Analytics</a><a href="{% url 'tpo_jobs' %}">Jobs</a><a href="{% url 'tpo_applications' %}">Applications</a></nav>
+    <section class="tpo-panel">
+        {% if student_rows %}<div class="tpo-table-wrap"><table class="tpo-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Branch</th><th>Semester</th><th>CGPA</th><th>Backlogs</th><th>Skills</th><th>Readiness</th></tr></thead>
+            <tbody>{% for row in student_rows %}{% with student=row.student %}
+                <tr><td><a href="{% url 'tpo_student_detail' student.id %}">{{ student.name }}</a></td><td>{{ student.email }}</td><td>{{ student.branch }}</td><td>{{ student.semester }}</td><td>{{ student.cgpa }}</td><td>{{ student.backlogs }}</td><td>{{ student.skills|truncatechars:100 }}</td><td>{{ row.readiness }}%</td></tr>
+            {% endwith %}{% endfor %}</tbody>
+        </table></div>{% else %}<div class="tpo-empty">No student records are available.</div>{% endif %}
+    </section>
+</div>
+{% endblock %}

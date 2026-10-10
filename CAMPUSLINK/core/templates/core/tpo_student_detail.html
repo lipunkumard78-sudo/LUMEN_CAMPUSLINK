@@ -1,0 +1,27 @@
+{% extends "core/base.html" %}
+{% block title %}{{ student.name }} | TPO | CAMPUSLINK{% endblock %}
+{% block extra_css %}{% include "core/tpo_styles.html" %}{% endblock %}
+{% block content %}
+<div class="tpo-wrap">
+    <header class="tpo-hero"><h1>{{ student.name }}</h1><p>{{ student.branch }} · Semester {{ student.semester }}</p></header>
+    <nav class="tpo-nav" aria-label="TPO management"><a href="{% url 'tpo_students' %}">Students</a><a href="{% url 'tpo_analytics' %}">Analytics</a><a href="{% url 'tpo_jobs' %}">Jobs</a><a href="{% url 'tpo_applications' %}">Applications</a></nav>
+    <section class="tpo-panel"><h2>Academic and readiness record</h2><div class="tpo-detail-grid">
+        <div class="tpo-detail-item"><span>Email</span><strong>{{ student.email }}</strong></div>
+        <div class="tpo-detail-item"><span>Branch</span><strong>{{ student.branch }}</strong></div>
+        <div class="tpo-detail-item"><span>Semester</span><strong>{{ student.semester }}</strong></div>
+        <div class="tpo-detail-item"><span>CGPA</span><strong>{{ student.cgpa }}</strong></div>
+        <div class="tpo-detail-item"><span>Backlogs</span><strong>{{ student.backlogs }}</strong></div>
+        <div class="tpo-detail-item"><span>Readiness</span><strong>{{ readiness }}%</strong></div>
+        <div class="tpo-detail-item"><span>Technical</span><strong>{{ student.technical_score }}</strong></div>
+        <div class="tpo-detail-item"><span>Aptitude</span><strong>{{ student.aptitude_score }}</strong></div>
+        <div class="tpo-detail-item"><span>Communication</span><strong>{{ student.communication_score }}</strong></div>
+        <div class="tpo-detail-item"><span>Interview</span><strong>{{ student.interview_score }}</strong></div>
+        <div class="tpo-detail-item"><span>Skills</span><strong>{{ student.skills }}</strong></div>
+    </div></section>
+    <section class="tpo-panel"><h2>Applications</h2>
+        {% if applications %}<div class="tpo-table-wrap"><table class="tpo-table"><thead><tr><th>Company</th><th>Job</th><th>Applied</th><th>Status</th></tr></thead><tbody>
+            {% for application in applications %}<tr><td>{{ application.job.company_name }}</td><td>{{ application.job.job_title }}</td><td>{{ application.applied_at|date:"M j, Y" }}</td><td>{{ application.get_status_display }}</td></tr>{% endfor %}
+        </tbody></table></div>{% else %}<div class="tpo-empty">No applications recorded for this student.</div>{% endif %}
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "core/base.html" %}
+{% block title %}Applications | TPO | CAMPUSLINK{% endblock %}
+{% block extra_css %}{% include "core/tpo_styles.html" %}{% endblock %}
+{% block content %}
+<div class="tpo-wrap">
+    <header class="tpo-hero"><h1>Application register</h1><p>Read-only placement applications and recruiter-managed statuses.</p></header>
+    <nav class="tpo-nav" aria-label="TPO management"><a href="{% url 'tpo_dashboard' %}">Overview</a><a href="{% url 'tpo_analytics' %}">Analytics</a><a href="{% url 'tpo_students' %}">Students</a><a href="{% url 'tpo_jobs' %}">Jobs</a></nav>
+    <section class="tpo-panel">
+        <form method="get" class="tpo-filters">
+            <div><label for="filter-status">Status</label><select id="filter-status" name="status"><option value="">All statuses</option>{% for value,label in statuses %}<option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+            <div><label for="filter-job">Job</label><select id="filter-job" name="job"><option value="">All jobs</option>{% for job in jobs %}<option value="{{ job.id }}" {% if selected_job == job.id|stringformat:"s" %}selected{% endif %}>{{ job.company_name }} — {{ job.job_title }}</option>{% endfor %}</select></div>
+            <div><label for="filter-company">Company</label><select id="filter-company" name="company"><option value="">All companies</option>{% for company in companies %}<option value="{{ company }}" {% if selected_company == company %}selected{% endif %}>{{ company }}</option>{% endfor %}</select></div>
+            <div><label for="filter-student">Student</label><select id="filter-student" name="student"><option value="">All students</option>{% for student in students %}<option value="{{ student.id }}" {% if selected_student == student.id|stringformat:"s" %}selected{% endif %}>{{ student.name }}</option>{% endfor %}</select></div>
+            <div><label for="filter-branch">Branch</label><select id="filter-branch" name="branch"><option value="">All branches</option>{% for branch in branches %}<option value="{{ branch }}" {% if selected_branch == branch %}selected{% endif %}>{{ branch }}</option>{% endfor %}</select></div>
+            <button class="tpo-filter-submit" type="submit">Filter</button>
+        </form>
+    </section>
+    <section class="tpo-panel">
+        {% if application_rows %}<div class="tpo-table-wrap"><table class="tpo-table">
+            <thead><tr><th>Student</th><th>Branch</th><th>Company</th><th>Job</th><th>Match</th><th>Applied</th><th>Status</th></tr></thead>
+            <tbody>{% for row in application_rows %}{% with application=row.application %}
+                <tr><td><a href="{% url 'tpo_student_detail' application.student.id %}">{{ application.student.name }}</a></td><td>{{ application.student.branch }}</td><td>{{ application.job.company_name }}</td><td><a href="{% url 'tpo_job_detail' application.job.id %}">{{ application.job.job_title }}</a></td><td>{{ row.match_score }}%</td><td>{{ application.applied_at|date:"M j, Y" }}</td><td><span class="tpo-badge {{ application.status|lower }}">{{ application.get_status_display }}</span></td></tr>
+            {% endwith %}{% endfor %}</tbody>
+        </table></div>{% else %}<div class="tpo-empty">No applications match these filters.</div>{% endif %}
+    </section>
+</div>
+{% endblock %}

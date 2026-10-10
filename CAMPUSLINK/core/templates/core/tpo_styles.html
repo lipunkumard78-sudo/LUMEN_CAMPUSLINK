@@ -1,0 +1,50 @@
+<style>
+    .tpo-wrap, .tpo-panel, .tpo-card, .tpo-metric, .tpo-hero { box-sizing: border-box; }
+    .tpo-wrap { width: min(1180px, 94%); margin: 30px auto 56px; }
+    .tpo-hero { padding: 23px 26px; margin-bottom: 16px; border: 1px solid #173f5f; border-radius: 5px; background: #0b1f3a; color: #fff; }
+    .tpo-hero h1 { margin: 0 0 7px; font-size: 28px; }
+    .tpo-hero p { margin: 0; color: #d5e4ec; }
+    .tpo-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+    .tpo-nav a, .tpo-action { display: inline-flex; align-items: center; min-height: 36px; padding: 8px 12px; border: 1px solid #173f5f; border-radius: 4px; background: #173f5f; color: #fff; font-size: 13px; font-weight: 700; text-decoration: none; }
+    .tpo-nav a:hover, .tpo-action:hover { background: #0b1f3a; color: #fff; }
+    .tpo-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 16px 0 20px; }
+    .tpo-metric, .tpo-panel { border: 1px solid #dce5ea; border-radius: 6px; background: #fff; }
+    .tpo-card, .metric { border: 1px solid #dce5ea; border-radius: 5px; background: #fff; box-shadow: none; }
+    .tpo-metric { min-height: 95px; padding: 16px; border-top: 3px solid #20c7b5; }
+    .tpo-metric span { display: block; color: #586b79; font-size: 12px; font-weight: 650; }
+    .tpo-metric strong { display: block; margin-top: 8px; color: #0b1f3a; font-size: 27px; }
+    .tpo-panel { margin-bottom: 16px; padding: 18px; }
+    .tpo-panel h2 { margin: 0 0 12px; color: #0b1f3a; font-size: 18px; }
+    .tpo-card { min-width: 0; max-width: 100%; padding: 18px; }
+    .tpo-card h2 { margin: 0 0 12px; color: #0b1f3a; font-size: 18px; }
+    .tpo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .tpo-wrap table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tpo-wrap th, .tpo-wrap td { padding: 10px 11px; border-bottom: 1px solid #e6ecef; text-align: left; }
+    .tpo-wrap th { background: #f1f6f7; color: #596d7c; font-size: 11px; text-transform: uppercase; }
+    .tpo-card table { table-layout: fixed; }
+    .tpo-card th, .tpo-card td { overflow-wrap: anywhere; }
+    .tpo-table-wrap { overflow-x: auto; }
+    .tpo-table { width: 100%; border-collapse: collapse; text-align: left; }
+    .tpo-table th { padding: 10px 11px; background: #f1f6f7; color: #596d7c; font-size: 11px; text-transform: uppercase; }
+    .tpo-table td { padding: 11px; border-bottom: 1px solid #e6ecef; color: #293947; font-size: 13px; vertical-align: middle; }
+    .tpo-table tr:last-child td { border-bottom: 0; }
+    .tpo-table th { white-space: nowrap; }
+    .tpo-table tbody tr:hover { background: #f9fbfb; }
+    .tpo-badge { display: inline-block; padding: 4px 8px; border: 1px solid #b9dfd7; border-radius: 3px; background: #edf8f5; color: #146454; font-size: 11px; font-weight: 750; }
+    .tpo-badge.closed, .tpo-badge.rejected { background: #f8e8e5; color: #873a32; }
+    .tpo-badge.applied { border-color: #bdd8e4; background: #eff7fa; color: #234f61; }
+    .tpo-badge.shortlisted { border-color: #c8dfb5; background: #edf6e7; color: #456521; }
+    .tpo-badge.offered { background: #e8f2d9; color: #456521; }
+    .tpo-empty { padding: 24px; border: 1px dashed #b8cbd0; border-radius: 5px; background: #f8fbfa; color: #526275; text-align: center; }
+    .tpo-detail-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .tpo-detail-item { padding: 12px; border: 1px solid #e0e7eb; border-radius: 4px; background: #f8fafb; }
+    .tpo-detail-item span { display: block; color: #637382; font-size: 11px; text-transform: uppercase; }
+    .tpo-detail-item strong { display: block; margin-top: 4px; color: #0b1f3a; overflow-wrap: anywhere; }
+    .tpo-filters { display: grid; grid-template-columns: repeat(5, minmax(130px, 1fr)) auto; gap: 9px; align-items: end; }
+    .tpo-filters label { display: block; margin-bottom: 4px; color: #526275; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .tpo-filters select { width: 100%; min-height: 38px; padding: 8px; border: 1px solid #c5d1d7; border-radius: 4px; background: #fff; color: #293947; }
+    .tpo-filter-submit { min-height: 38px; padding: 8px 13px; border: 1px solid #173f5f; border-radius: 4px; background: #173f5f; color: #fff; font-weight: 700; cursor: pointer; }
+    .tpo-wrap a:focus-visible, .tpo-wrap button:focus-visible, .tpo-wrap select:focus-visible { outline: 3px solid #20c7b5; outline-offset: 2px; }
+    @media (max-width: 850px) { .tpo-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tpo-detail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tpo-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) { .tpo-hero { padding: 20px; } .tpo-hero h1 { font-size: 24px; } .tpo-panel { padding: 13px; } .tpo-detail-grid { grid-template-columns: 1fr; } }
+</style>

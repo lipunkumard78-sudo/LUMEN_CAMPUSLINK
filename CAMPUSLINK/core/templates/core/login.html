@@ -1,0 +1,13 @@
+{% extends "core/base.html" %}
+
+{% block title %}Log in | CAMPUSLINK{% endblock %}
+{% block extra_css %}{% include "core/recruiter_styles.html" %}{% endblock %}
+
+{% block content %}
+<form class="login-form" method="post">
+    <h1>Log in</h1>
+    {% csrf_token %}{{ form.as_p }}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+    <button class="recruiter-btn" type="submit">Continue</button>
+</form>
+{% endblock %}

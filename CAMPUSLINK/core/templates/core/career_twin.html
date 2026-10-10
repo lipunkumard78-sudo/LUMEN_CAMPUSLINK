@@ -1,0 +1,846 @@
+{% extends "core/base.html" %}
+
+{% block title %}CAMPUSLINK — Career Twin | {{ student.name|default:"Profile" }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .twin-container {
+        width: 92%;
+        max-width: 1140px;
+        margin: 32px auto;
+    }
+
+    /* DIGITAL TWIN PERSONA HEADER */
+    .twin-header-card {
+        background: linear-gradient(135deg, #0b1f3a 0%, #173f5f 100%);
+        color: white;
+        padding: 32px;
+        border-radius: 16px;
+        margin-bottom: 28px;
+        box-shadow: 0 10px 30px rgba(11, 31, 58, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .twin-header-card::after {
+        content: "CAREER TWIN 360";
+        position: absolute;
+        right: -20px;
+        bottom: -25px;
+        font-size: 80px;
+        font-weight: 900;
+        color: rgba(255, 255, 255, 0.04);
+        pointer-events: none;
+        letter-spacing: 2px;
+    }
+
+    .twin-header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .twin-identity {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+    }
+
+    .twin-avatar {
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #20c7b5, #0284c7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        font-weight: 800;
+        color: white;
+        box-shadow: 0 0 20px rgba(32, 199, 181, 0.4);
+        border: 3px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .twin-title-group h1 {
+        margin: 0 0 6px 0;
+        font-size: 28px;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .twin-tag {
+        font-size: 11px;
+        font-weight: 700;
+        background: rgba(32, 199, 181, 0.2);
+        color: #20c7b5;
+        padding: 4px 10px;
+        border-radius: 12px;
+        border: 1px solid rgba(32, 199, 181, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .twin-subtitle {
+        margin: 0;
+        color: #94a3b8;
+        font-size: 15px;
+    }
+
+    .twin-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .twin-switcher select {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 13px;
+        cursor: pointer;
+    }
+
+    .twin-switcher select option {
+        background: #0b1f3a;
+        color: white;
+    }
+
+    .twin-stats-ribbon {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-top: 26px;
+        padding-top: 22px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .ribbon-item {
+        background: rgba(255, 255, 255, 0.06);
+        padding: 12px 16px;
+        border-radius: 10px;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ribbon-label {
+        font-size: 11px;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 4px;
+    }
+
+    .ribbon-value {
+        font-size: 18px;
+        font-weight: 700;
+        color: #f8fafc;
+    }
+
+    /* GRID LAYOUT FOR TWIN ANALYSIS */
+    .twin-grid-2col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 28px;
+    }
+
+    .twin-card {
+        background: white;
+        border-radius: 14px;
+        padding: 26px 28px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        border: 1px solid #eef2f6;
+    }
+
+    .twin-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 14px;
+    }
+
+    .twin-card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0b1f3a;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* 360 READINESS RADAR METER */
+    .radar-summary {
+        text-align: center;
+        padding: 12px 0 20px 0;
+    }
+
+    .radar-score-main {
+        font-size: 64px;
+        font-weight: 900;
+        color: #0284c7;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+
+    .level-badge {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .level-high {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .level-moderate {
+        background: #e0f2fe;
+        color: #0369a1;
+        border: 1px solid #bae6fd;
+    }
+
+    .level-developing {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+    }
+
+    .dimension-progress-row {
+        margin-bottom: 14px;
+    }
+
+    .dim-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 6px;
+    }
+
+    .dim-bar-track {
+        height: 10px;
+        background: #f1f5f9;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .dim-bar-fill {
+        height: 100%;
+        border-radius: 8px;
+        transition: width 0.4s ease;
+    }
+
+    .pillar-diagnostic-banner {
+        margin-top: 20px;
+        padding: 14px;
+        border-radius: 10px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        font-size: 13px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .diagnostic-item strong {
+        display: block;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+    }
+
+    /* SKILLS & GAPS */
+    .skills-cluster {
+        margin-bottom: 18px;
+    }
+
+    .cluster-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .tag-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .twin-tag-pill {
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .tag-student {
+        background: #f1f5f9;
+        color: #1e293b;
+        border: 1px solid #cbd5e1;
+    }
+
+    .tag-matched {
+        background: #dcfce7;
+        color: #166534;
+        border: 1px solid #bbf7d0;
+    }
+
+    .tag-gap {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    /* EXPLAINABLE RECOMMENDATIONS CARDS */
+    .recommendations-section {
+        background: white;
+        border-radius: 14px;
+        padding: 26px 28px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        border: 1px solid #eef2f6;
+    }
+
+    .recomms-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        margin-top: 18px;
+    }
+
+    .recomm-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .recomm-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+    }
+
+    .recomm-type-skill::before { background: #0284c7; }
+    .recomm-type-readiness::before { background: #10b981; }
+    .recomm-type-eligibility::before { background: #f59e0b; }
+    .recomm-type-project::before { background: #8b5cf6; }
+
+    .recomm-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .recomm-icon {
+        font-size: 22px;
+    }
+
+    .recomm-cat {
+        font-size: 11px;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #64748b;
+        letter-spacing: 0.5px;
+    }
+
+    .recomm-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0b1f3a;
+        margin: 0 0 8px 0;
+    }
+
+    .recomm-desc {
+        font-size: 13.5px;
+        color: #475569;
+        line-height: 1.55;
+        margin: 0 0 16px 0;
+    }
+
+    .recomm-impact {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        background: white;
+        border: 1px solid #e2e8f0;
+        color: #0f172a;
+        width: fit-content;
+    }
+
+    /* MATCHING DRIVES TABLE */
+    .drives-section {
+        background: white;
+        border-radius: 14px;
+        padding: 26px 28px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        border: 1px solid #eef2f6;
+    }
+
+    .role-analysis-item {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 22px;
+        margin-bottom: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .role-info-block h3 {
+        margin: 0 0 4px 0;
+        font-size: 18px;
+        color: #0b1f3a;
+    }
+
+    .role-company-badge {
+        color: #0284c7;
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .twin-job-status { display: inline-flex; min-height: 23px; align-items: center; padding: 3px 8px; border: 1px solid #b9dfd7; border-radius: 4px; background: #edf8f5; color: #174f47; font-size: 11px; font-weight: 700; }
+    .twin-job-status.closed { border-color: #e4b8b1; background: #fbefed; color: #7e2c29; }
+
+    .role-meta-list {
+        display: flex;
+        gap: 16px;
+        font-size: 13px;
+        color: #64748b;
+        flex-wrap: wrap;
+    }
+
+    .role-meta-list span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .role-skills-preview {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .btn-twin-action {
+        display: inline-block;
+        background: #173f5f;
+        color: white;
+        padding: 9px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .btn-twin-action:hover {
+        background: #0b1f3a;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .twin-nav-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        padding: 20px 0;
+    }
+
+    .twin-header-card { background: #0b1f3a; border: 1px solid #173f5f; border-radius: 6px; box-shadow: none; }
+    .twin-header-card::after { content: none; }
+    .twin-avatar { background: #20a99b; box-shadow: none; }
+    .twin-title-group h1 { letter-spacing: 0; }
+    .twin-tag, .twin-tag-pill, .level-badge { border-radius: 4px; }
+    .twin-card, .recommendations-section, .drives-section { border: 1px solid #dce5ea; border-radius: 6px; box-shadow: none; }
+    .recomm-card, .role-analysis-item { border-radius: 5px; }
+    .btn-twin-action { border-radius: 4px; transition: background-color .15s ease; }
+    .twin-actions { flex-wrap: wrap; justify-content: flex-end; }
+
+    @media (max-width: 860px) {
+        .twin-grid-2col, .recomms-grid, .twin-stats-ribbon {
+            grid-template-columns: 1fr;
+        }
+        .pillar-diagnostic-banner {
+            grid-template-columns: 1fr;
+        }
+        .role-analysis-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .twin-container { width: 94%; margin: 20px auto; }
+        .twin-header-card, .twin-card, .recommendations-section, .drives-section { padding: 20px; }
+        .twin-identity { align-items: flex-start; }
+        .twin-title-group h1 { flex-wrap: wrap; font-size: 23px; }
+        .twin-nav-footer { align-items: flex-start; flex-direction: column; gap: 12px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="twin-container">
+
+    {% if not student %}
+        <div class="twin-header-card">
+            <h1>No Student Profile Active</h1>
+            <p>{{ error|default:"Please contact your campus administrator to link an available student profile." }}</p>
+        </div>
+    {% else %}
+
+        <!-- DIGITAL TWIN PERSONA HEADER -->
+        <div class="twin-header-card">
+            <div class="twin-header-top">
+                <div class="twin-identity">
+                    <div class="twin-avatar">
+                        {{ student.name|slice:":1" }}
+                    </div>
+                    <div class="twin-title-group">
+                        <h1>
+                            {{ student.name }}
+                            <span class="twin-tag">Career Twin 360</span>
+                        </h1>
+                        <p class="twin-subtitle">
+                            Course: <strong>{{ student.branch }}</strong> &bull; Semester {{ student.semester }} &bull; {{ institution }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="twin-actions">
+                    <a href="{% url 'student_dashboard' %}" class="btn-twin-action" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);">
+                        ← Student Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <!-- QUICK STATS RIBBON -->
+            <div class="twin-stats-ribbon">
+                <div class="ribbon-item">
+                    <div class="ribbon-label">Academic Standing</div>
+                    <div class="ribbon-value">{{ student.cgpa }} CGPA &bull; {{ student.backlogs }} Backlogs</div>
+                </div>
+                <div class="ribbon-item">
+                    <div class="ribbon-label">Readiness Index</div>
+                    <div class="ribbon-value">{{ readiness }}% ({{ readiness_level }})</div>
+                </div>
+                <div class="ribbon-item">
+                    <div class="ribbon-label">Verified Skill Count</div>
+                    <div class="ribbon-value">{{ student_skills_display|length }} Active Skills</div>
+                </div>
+                <div class="ribbon-item">
+                    <div class="ribbon-label">Contact Verification</div>
+                    <div class="ribbon-value">{{ student.email }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2-COLUMN ANALYSIS SECTION -->
+        <div class="twin-grid-2col">
+
+            <!-- LEFT: 360° READINESS MULTI-VECTOR RADAR -->
+            <div class="twin-card">
+                <div class="twin-card-header">
+                    <h2 class="twin-card-title">
+                        <span>🎯</span> 360° Readiness Dimensions
+                    </h2>
+                    <span class="level-badge {{ readiness_badge_class }}">
+                        {{ readiness_level }}
+                    </span>
+                </div>
+
+                <div class="radar-summary">
+                    <div class="radar-score-main">{{ readiness }}%</div>
+                    <p style="margin: 0; font-size: 13px; color: #64748b;">
+                        Composite Placement Persona Score (Equal-Weighted 4-Factor Mean)
+                    </p>
+                </div>
+
+                <!-- 4 DIMENSION BARS -->
+                <div class="dimension-progress-row">
+                    <div class="dim-header">
+                        <span>Technical Proficiency</span>
+                        <span>{{ student.technical_score }} / 100</span>
+                    </div>
+                    <div class="dim-bar-track">
+                        <div class="dim-bar-fill" style="width: {{ student.technical_score }}%; background: #0284c7;"></div>
+                    </div>
+                </div>
+
+                <div class="dimension-progress-row">
+                    <div class="dim-header">
+                        <span>Aptitude &amp; Problem Solving</span>
+                        <span>{{ student.aptitude_score }} / 100</span>
+                    </div>
+                    <div class="dim-bar-track">
+                        <div class="dim-bar-fill" style="width: {{ student.aptitude_score }}%; background: #10b981;"></div>
+                    </div>
+                </div>
+
+                <div class="dimension-progress-row">
+                    <div class="dim-header">
+                        <span>Communication &amp; Articulation</span>
+                        <span>{{ student.communication_score }} / 100</span>
+                    </div>
+                    <div class="dim-bar-track">
+                        <div class="dim-bar-fill" style="width: {{ student.communication_score }}%; background: #f59e0b;"></div>
+                    </div>
+                </div>
+
+                <div class="dimension-progress-row">
+                    <div class="dim-header">
+                        <span>Interview Performance</span>
+                        <span>{{ student.interview_score }} / 100</span>
+                    </div>
+                    <div class="dim-bar-track">
+                        <div class="dim-bar-fill" style="width: {{ student.interview_score }}%; background: #8b5cf6;"></div>
+                    </div>
+                </div>
+
+                <div class="pillar-diagnostic-banner">
+                    <div class="diagnostic-item" style="color: #0369a1;">
+                        <strong>🏆 Peak Vector</strong>
+                        {{ strongest_pillar.0 }}: {{ strongest_pillar.1 }}/100
+                    </div>
+                    <div class="diagnostic-item" style="color: #b45309;">
+                        <strong>⚠️ Highest Growth Vector</strong>
+                        {{ weakest_pillar.0 }}: {{ weakest_pillar.1 }}/100
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: SKILL PROFILE & MARKET GAP MATRIX -->
+            <div class="twin-card">
+                <div class="twin-card-header">
+                    <h2 class="twin-card-title">
+                        <span>🧬</span> Skill Profile &amp; Gap Matrix
+                    </h2>
+                    <span style="font-size: 13px; color: #64748b; font-weight: 600;">
+                        Cross-Market Evaluation
+                    </span>
+                </div>
+
+                <!-- STUDENT'S OWN SKILLS -->
+                <div class="skills-cluster">
+                    <div class="cluster-title">
+                        <span>👨‍💻</span> Verified Student Skills ({{ student_skills_display|length }})
+                    </div>
+                    <div class="tag-container">
+                        {% for skill in student_skills_display %}
+                            <span class="twin-tag-pill tag-student">{{ skill }}</span>
+                        {% empty %}
+                            <p style="color: #94a3b8; font-size: 13px;">No skills registered in profile.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- VERIFIED MATCHING SKILLS -->
+                <div class="skills-cluster">
+                    <div class="cluster-title" style="color: #166534;">
+                        <span>✓</span> Market-Matched Placement Skills
+                    </div>
+                    <div class="tag-container">
+                        {% for skill in all_matched_skills %}
+                            <span class="twin-tag-pill tag-matched">✓ {{ skill|title }}</span>
+                        {% empty %}
+                            <p style="color: #64748b; font-size: 13px;">No skills currently overlap with posted job requirements.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- CRITICAL SKILL GAPS -->
+                <div class="skills-cluster">
+                    <div class="cluster-title" style="color: #991b1b;">
+                        <span>⚠️</span> High-Priority Market Skill Gaps
+                    </div>
+                    <div class="tag-container">
+                        {% for skill in top_missing_skills %}
+                            <span class="twin-tag-pill tag-gap">✗ {{ skill|title }}</span>
+                        {% empty %}
+                            <p style="color: #166534; font-size: 13px;">Excellent! Zero market skill gaps detected across active jobs.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- PROJECT AND CERTIFICATION EVIDENCE -->
+                <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #f1f5f9; font-size: 13px; color: #475569;">
+                    <p style="margin: 0 0 6px 0;">
+                        <strong>Capstone Projects:</strong> {{ student.projects|default:"None listed" }}
+                    </p>
+                    <p style="margin: 0;">
+                        <strong>Certifications:</strong> {{ student.certifications|default:"None listed" }}
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- EXPLAINABLE RECOMMENDATIONS ENGINE -->
+        <div class="recommendations-section">
+            <div class="twin-card-header">
+                <div>
+                    <h2 class="twin-card-title">
+                        <span>💡</span> Explainable Career Recommendations
+                    </h2>
+                    <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">
+                        Deterministic strategic roadmap derived directly from your readiness scores and recruiter skill criteria.
+                    </p>
+                </div>
+                <span class="twin-tag" style="background:#e0f2fe; color:#0369a1; border-color:#bae6fd;">
+                    Rule-Based &bull; Explainable
+                </span>
+            </div>
+
+            <div class="recomms-grid">
+                {% for rec in recommendations %}
+                    <div class="recomm-card recomm-type-{{ rec.type }}">
+                        <div>
+                            <div class="recomm-header">
+                                <span class="recomm-icon">{{ rec.icon }}</span>
+                                <span class="recomm-cat">{{ rec.category }}</span>
+                            </div>
+                            <h3 class="recomm-title">{{ rec.title }}</h3>
+                            <p class="recomm-desc">{{ rec.description }}</p>
+                        </div>
+                        <div class="recomm-impact">
+                            <span>📈 Projected Impact:</span>
+                            <strong>{{ rec.impact }}</strong>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- TARGET CAREER ROLES & MATCHING DRIVES -->
+        <div class="drives-section">
+            <div class="twin-card-header">
+                <div>
+                    <h2 class="twin-card-title">
+                        <span>💼</span> Target Career Roles &amp; Matching Placement Drives
+                    </h2>
+                    <p style="margin: 4px 0 0 0; font-size: 13px; color: #64748b;">
+                        Active recruiter opportunities evaluated against your academic CGPA ({{ student.cgpa }}), Backlogs ({{ student.backlogs }}), and skill profile.
+                    </p>
+                </div>
+                <div>
+                    <span style="font-size: 13px; color: #475569; font-weight: 600;">
+                        Identified Target Roles:
+                        {% for role in target_roles %}
+                            <strong style="color: #0b1f3a;">{{ role }}</strong>{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            None posted
+                        {% endfor %}
+                    </span>
+                </div>
+            </div>
+
+            {% for item in role_analyses %}
+                <div class="role-analysis-item">
+                    <div class="role-info-block">
+                        <h3>{{ item.job.job_title }}</h3>
+                        <div class="role-company-badge">{{ item.job.company_name }}</div>
+                        <span class="twin-job-status {% if item.job.status == 'CLOSED' %}closed{% endif %}">{{ item.job.get_status_display }}</span>
+                        <div class="role-meta-list">
+                            {% if item.job.location %}
+                                <span>📍 {{ item.job.location }}</span>
+                            {% endif %}
+                            {% if item.job.package %}
+                                <span>💰 {{ item.job.package }}</span>
+                            {% endif %}
+                            <span>🎓 Minimum CGPA: {{ item.job.minimum_cgpa }}</span>
+                            <span>📋 Max Backlogs: {{ item.job.maximum_backlogs }}</span>
+                        </div>
+
+                        <div class="role-skills-preview">
+                            <span style="font-size: 12px; font-weight: 700; color: #475569;">Matched:</span>
+                            {% for s in item.matched_skills %}
+                                <span class="twin-tag-pill tag-matched" style="font-size: 11px; padding: 2px 8px;">✓ {{ s|title }}</span>
+                            {% empty %}
+                                <span style="font-size: 12px; color: #94a3b8;">None</span>
+                            {% endfor %}
+
+                            <span style="font-size: 12px; font-weight: 700; color: #475569; margin-left: 8px;">Missing:</span>
+                            {% for s in item.missing_skills %}
+                                <span class="twin-tag-pill tag-gap" style="font-size: 11px; padding: 2px 8px;">✗ {{ s|title }}</span>
+                            {% empty %}
+                                <span style="font-size: 12px; color: #166534;">All satisfied</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+                        <div>
+                            <span style="font-size: 14px; font-weight: 700; color: #0b1f3a; margin-right: 6px;">
+                                Match: {{ item.match_pct }}%
+                            </span>
+                            {% if item.eligible %}
+                                <span class="level-badge level-high" style="font-size: 11px; padding: 3px 10px;">✓ Eligible for Drive</span>
+                            {% else %}
+                                <span class="level-badge level-developing" style="font-size: 11px; padding: 3px 10px;">⚠ Needs Improvement</span>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'job_match' item.job.id %}" class="btn-twin-action">
+                            View Full Match Report →
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                <p style="color: #64748b; font-size: 14px;">No matching jobs are available yet.</p>
+            {% endfor %}
+        </div>
+
+        <!-- NAV FOOTER -->
+        <div class="twin-nav-footer">
+            <a href="{% url 'student_dashboard' %}" class="btn-twin-action">
+                ← Return to Student Dashboard
+            </a>
+            <span style="color: #94a3b8; font-size: 13px;">
+                CAMPUSLINK 360 &bull; Persona ID: TWIN-{{ student.id|stringformat:"04d" }}
+            </span>
+        </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}

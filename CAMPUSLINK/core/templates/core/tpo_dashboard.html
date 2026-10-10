@@ -1,0 +1,42 @@
+{% extends "core/base.html" %}
+{% block title %}CAMPUSLINK — TPO Dashboard{% endblock %}
+{% block extra_css %}
+<style>
+.tpo-wrap{max-width:1120px;margin:36px auto;padding:0 20px}.tpo-hero,.tpo-card,.metric{background:#fff;border:1px solid #e4eaf1;border-radius:14px;box-shadow:0 5px 20px #0b1f3a0b}.tpo-hero{padding:28px;margin-bottom:20px;background:linear-gradient(120deg,#0b1f3a,#173f5f);color:#fff}.tpo-hero h1{margin:0 0 8px}.tpo-hero p{margin:0;color:#d9e5ef}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:18px 0 24px}.metric{padding:20px}.metric strong{display:block;color:#0b1f3a;font-size:30px}.metric span{color:#64748b;font-size:13px}.tpo-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.tpo-card{padding:22px}.tpo-card h2{margin:0 0 16px;color:#0b1f3a;font-size:19px}table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid #edf1f5}th{color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:.04em}.tag{display:inline-block;padding:4px 9px;border-radius:999px;background:#e5f8f5;color:#087f72;font-size:12px}@media(max-width:700px){.tpo-grid{grid-template-columns:1fr}}
+</style>
+{% include "core/tpo_styles.html" %}
+{% endblock %}
+{% block content %}
+<div class="tpo-wrap">
+  <header class="tpo-hero"><h1>Training &amp; Placement Overview</h1><p>Live student, job, and application records from CAMPUSLINK.</p></header>
+  <nav class="tpo-nav" aria-label="TPO management"><a href="{% url 'tpo_analytics' %}">Placement analytics</a><a href="{% url 'tpo_students' %}">Students</a><a href="{% url 'tpo_jobs' %}">Jobs</a><a href="{% url 'tpo_applications' %}">Applications</a></nav>
+  <section class="tpo-metrics" aria-label="Placement overview">
+    <div class="tpo-metric"><span>Total students</span><strong>{{ student_count }}</strong></div>
+    <div class="tpo-metric"><span>Total jobs</span><strong>{{ job_count }}</strong></div>
+    <div class="tpo-metric"><span>Open jobs</span><strong>{{ open_job_count }}</strong></div>
+    <div class="tpo-metric"><span>Closed jobs</span><strong>{{ closed_job_count }}</strong></div>
+    <div class="tpo-metric"><span>Total applications</span><strong>{{ application_count }}</strong></div>
+    <div class="tpo-metric"><span>Applied</span><strong>{{ applied_count }}</strong></div>
+    <div class="tpo-metric"><span>Shortlisted</span><strong>{{ shortlisted_count }}</strong></div>
+    <div class="tpo-metric"><span>Rejected</span><strong>{{ rejected_count }}</strong></div>
+    <div class="tpo-metric"><span>Offered</span><strong>{{ offered_count }}</strong></div>
+    <div class="tpo-metric"><span>Students with offers</span><strong>{{ students_with_offers }}</strong></div>
+    <div class="tpo-metric"><span>Total offers</span><strong>{{ total_offers }}</strong></div>
+    <div class="tpo-metric"><span>Average readiness</span><strong>{{ average_readiness }}%</strong></div>
+  </section>
+  <div class="tpo-grid">
+    <section class="tpo-card"><h2>Student readiness</h2>
+      {% if readiness_students %}<table><thead><tr><th>Student</th><th>Branch</th><th>CGPA</th><th>Readiness</th></tr></thead><tbody>
+      {% for row in readiness_students %}<tr><td><a href="{% url 'tpo_student_detail' row.student.id %}">{{ row.student.name }}</a></td><td>{{ row.student.branch }}</td><td>{{ row.student.cgpa }}</td><td>{{ row.readiness }}%</td></tr>{% endfor %}
+      </tbody></table>{% else %}<p>No student profiles recorded.</p>{% endif %}
+    </section>
+    <section class="tpo-card"><h2>Placement drives</h2>
+      {% if jobs %}<table><thead><tr><th>Company</th><th>Role</th><th>Status</th><th>Applicants</th></tr></thead><tbody>{% for job in jobs %}<tr><td>{{ job.company_name }}</td><td><a href="{% url 'tpo_job_detail' job.id %}">{{ job.job_title }}</a></td><td>{{ job.get_status_display }}</td><td>{{ job.applicant_count }}</td></tr>{% endfor %}</tbody></table>{% else %}<p>No jobs recorded.</p>{% endif %}
+    </section>
+    <section class="tpo-card"><h2>Most frequent skill gaps</h2>
+      {% if top_skill_gaps %}<table><thead><tr><th>Skill</th><th>Student/job gaps</th></tr></thead><tbody>{% for skill, count in top_skill_gaps %}<tr><td><span class="tag">{{ skill }}</span></td><td>{{ count }}</td></tr>{% endfor %}</tbody></table>{% else %}<p>No recorded skill gaps across current job requirements.</p>{% endif %}
+    </section>
+    <section class="tpo-card"><h2>Placement outcomes</h2><p>{{ students_with_offers }} students have at least one offer across {{ total_offers }} offered application{{ total_offers|pluralize }}.</p><a href="{% url 'tpo_applications' %}">Review application outcomes</a></section>
+  </div>
+</div>
+{% endblock %}

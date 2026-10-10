@@ -1,0 +1,21 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ job.job_title }} | Recruiter Portal{% endblock %}
+{% block extra_css %}{% include "core/recruiter_styles.html" %}{% endblock %}
+
+{% block content %}
+<div class="recruiter-page">
+    <header class="recruiter-heading"><div><h1>{{ job.job_title }}</h1><p>{{ job.company_name }}{% if job.location %} · {{ job.location }}{% endif %}</p></div><div class="recruiter-actions"><a class="recruiter-btn secondary" href="{% url 'recruiter_jobs' %}">My jobs</a><a class="recruiter-btn" href="{% url 'recruiter_job_edit' job.id %}">Edit job</a></div></header>
+    <section class="recruiter-panel"><div class="recruiter-meta">
+        <div><span>Status</span><strong><span class="recruiter-badge {% if job.status == 'CLOSED' %}closed{% endif %}">{{ job.get_status_display }}</span></strong></div>
+        <div><span>Applicants</span><strong>{{ job.applicant_count }}</strong></div><div><span>Package</span><strong>{{ job.package|default:"Not listed" }}</strong></div>
+        <div><span>Deadline</span><strong>{{ job.deadline|date:"M j, Y"|default:"Not set" }}</strong></div><div><span>Drive date</span><strong>{{ job.drive_date|date:"M j, Y"|default:"Not set" }}</strong></div>
+        <div><span>Requirements</span><strong>CGPA {{ job.minimum_cgpa }} · Backlogs ≤ {{ job.maximum_backlogs }}</strong></div>
+    </div></section>
+    <section class="recruiter-panel"><h2>Required skills</h2><p>{{ job.required_skills|linebreaksbr }}</p></section>
+    <section class="recruiter-panel"><h2>Role description</h2><p>{{ job.description|default:"No description provided."|linebreaksbr }}</p></section>
+    <div class="recruiter-actions"><a class="recruiter-btn" href="{% url 'recruiter_applications' job.id %}">View applicants</a>
+        <form method="post" action="{% url 'recruiter_job_toggle_status' job.id %}">{% csrf_token %}<button class="recruiter-btn {% if job.status == 'OPEN' %}danger{% else %}secondary{% endif %}" type="submit">{% if job.status == 'OPEN' %}Close job{% else %}Reopen job{% endif %}</button></form>
+    </div>
+</div>
+{% endblock %}

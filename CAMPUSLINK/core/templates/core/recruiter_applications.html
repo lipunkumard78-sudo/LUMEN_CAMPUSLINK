@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+
+{% block title %}Applicants | {{ job.job_title }} | CAMPUSLINK{% endblock %}
+{% block extra_css %}{% include "core/recruiter_styles.html" %}{% endblock %}
+
+{% block content %}
+<div class="recruiter-page">
+    <header class="recruiter-heading"><div><h1>Applicants</h1><p>{{ job.company_name }} · {{ job.job_title }}</p></div><a class="recruiter-btn secondary" href="{% url 'recruiter_job_detail' job.id %}">Back to job</a></header>
+    <section class="recruiter-panel">
+        {% if applicants %}
+            {% if not has_matching_applicants %}<p class="recruiter-note">No matching applicants yet. All applicants are still listed below.</p>{% endif %}
+            {% if not shortlisted_count %}<p class="recruiter-note">No applicants have been shortlisted for this job yet.</p>{% endif %}
+            <div class="recruiter-table-wrap"><table class="recruiter-table">
+                <thead><tr><th>Student</th><th>College</th><th>Branch</th><th>CGPA</th><th>Match</th><th>Eligibility</th><th>Applied</th><th>Status</th><th>Update status</th></tr></thead>
+                <tbody>{% for item in applicants %}{% with application=item.application student=item.student %}
+                    <tr><td><strong>{{ student.name }}</strong></td><td>{{ item.college }}</td><td>{{ student.branch }}</td><td>{{ student.cgpa }}</td><td class="recruiter-score">{{ item.match_score }}%</td><td><span class="recruiter-badge {% if not item.eligible %}rejected{% endif %}">{% if item.eligible %}Eligible{% else %}Not eligible{% endif %}</span></td><td>{{ application.applied_at|date:"M j, Y" }}</td>
+                        <td><span class="recruiter-badge {{ application.status|lower }}">{{ application.get_status_display }}</span></td>
+                        <td><form method="post" action="{% url 'recruiter_application_status' application.id %}">{% csrf_token %}<select name="status" aria-label="Status for {{ student.name }}">{% for value,label in statuses %}<option value="{{ value }}" {% if application.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button class="recruiter-btn secondary" type="submit">Save</button></form></td>
+                    </tr>
+                {% endwith %}{% endfor %}</tbody>
+            </table></div>
+        {% else %}<div class="recruiter-empty"><strong>No applications yet</strong>Applications for this job will appear here.</div>{% endif %}
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ page_title }} | CAMPUSLINK{% endblock %}
+{% block extra_css %}{% include "core/recruiter_styles.html" %}{% endblock %}
+
+{% block content %}
+<div class="recruiter-page">
+    <header class="recruiter-heading"><div><h1>{{ page_title }}</h1><p>Job ownership is tied to your authenticated recruiter account.</p></div><a class="recruiter-btn secondary" href="{% url 'recruiter_jobs' %}">Back to my jobs</a></header>
+    <section class="recruiter-panel recruiter-form">
+        <form method="post" novalidate>{% csrf_token %}{{ form.as_p }}
+            <div class="recruiter-actions"><button class="recruiter-btn" type="submit">{{ submit_label }}</button><a class="recruiter-btn secondary" href="{% url 'recruiter_jobs' %}">Cancel</a></div>
+        </form>
+    </section>
+</div>
+{% endblock %}

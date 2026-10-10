@@ -1,0 +1,45 @@
+{% extends "core/base.html" %}
+
+{% block title %}My Applications | CAMPUSLINK{% endblock %}
+{% block extra_css %}
+<style>
+    .student-applications { width: min(1180px, 94%); margin: 28px auto 52px; }
+    .student-applications h1 { margin: 0; color: #0b1f3a; font-size: 28px; }
+    .student-applications-intro { margin: 7px 0 22px; color: #64748b; }
+    .application-list { display: grid; gap: 12px; }
+    .application-row { display: grid; grid-template-columns: minmax(200px, 1.4fr) repeat(3, minmax(110px, .8fr)); gap: 12px; align-items: center; padding: 17px; border: 1px solid #dce5ea; border-left: 4px solid #20c7b5; border-radius: 5px; background: #fff; }
+    .application-row strong { display: block; color: #0b1f3a; }
+    .application-row small, .application-row span { color: #526275; }
+    .application-label { display: block; margin-bottom: 4px; color: #748394 !important; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .application-status { display: inline-block; padding: 5px 9px; border: 1px solid #bdd8e4; border-radius: 4px; background: #eff7fa; color: #234f61 !important; font-size: 12px; font-weight: 700; }
+    .application-status.shortlisted { border-color: #c8dfb5; background: #edf6e7; color: #456521 !important; }
+    .application-status.rejected { border-color: #e4b8b1; background: #fbefed; color: #7e2c29 !important; }
+    .application-status.offered { border-color: #c8dfb5; background: #edf6e7; color: #456521 !important; }
+    .applications-empty { padding: 28px; border: 1px dashed #b8cbd0; border-radius: 6px; background: #f8fbfa; color: #526275; text-align: center; }
+    .applications-empty strong { display: block; margin-bottom: 6px; color: #0b1f3a; }
+    .student-applications-link { display: inline-block; margin-top: 16px; padding: 9px 14px; border-radius: 5px; background: #173f5f; color: white; font-weight: 700; text-decoration: none; }
+    @media (max-width: 700px) { .application-row { grid-template-columns: repeat(2, minmax(0, 1fr)); } .application-row > :first-child { grid-column: 1 / -1; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="student-applications">
+    <h1>My Applications</h1>
+    <p class="student-applications-intro">Application status is read-only here. Contact the recruiter for status questions.</p>
+    {% if applications %}
+        <div class="application-list">
+            {% for item in applications %}{% with application=item.application job=item.application.job %}
+                <article class="application-row">
+                    <div><strong>{{ job.company_name }} · {{ job.job_title }}</strong><small>{{ job.location|default:"Location not listed" }}</small></div>
+                    <div><span class="application-label">Applied</span><span>{{ application.applied_at|date:"M j, Y" }}</span></div>
+                    <div><span class="application-label">Match</span><span>{{ item.match_score }}%</span></div>
+                    <div><span class="application-label">Status</span><span class="application-status {{ application.status|lower }}">{{ application.get_status_display }}</span></div>
+                    <div><span class="application-label">Deadline</span><span>{{ job.deadline|date:"M j, Y"|default:"Not set" }}</span></div>
+                </article>
+            {% endwith %}{% endfor %}
+        </div>
+    {% else %}
+        <div class="applications-empty"><strong>No applications yet</strong>Your submitted job applications will appear here.<br><a class="student-applications-link" href="{% url 'student_dashboard' %}">Explore jobs</a></div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "core/base.html" %}
+
+{% block title %}My Jobs | CAMPUSLINK{% endblock %}
+{% block extra_css %}{% include "core/recruiter_styles.html" %}{% endblock %}
+
+{% block content %}
+<div class="recruiter-page">
+    <header class="recruiter-heading"><div><h1>My jobs</h1><p>Only jobs owned by your recruiter account are shown.</p></div><a class="recruiter-btn" href="{% url 'recruiter_job_create' %}">Create job</a></header>
+    <section class="recruiter-panel">
+        {% if jobs %}
+            <div class="recruiter-table-wrap"><table class="recruiter-table">
+                <thead><tr><th>Company / role</th><th>Required skills</th><th>Deadline</th><th>Drive date</th><th>Status</th><th>Applicants</th><th>Actions</th></tr></thead>
+                <tbody>{% for job in jobs %}
+                    <tr>
+                        <td><strong>{{ job.company_name }}</strong><br>{{ job.job_title }}</td><td>{{ job.required_skills|truncatechars:90 }}</td>
+                        <td>{{ job.deadline|date:"M j, Y"|default:"Not set" }}</td><td>{{ job.drive_date|date:"M j, Y"|default:"Not set" }}</td>
+                        <td><span class="recruiter-badge {% if job.status == 'CLOSED' %}closed{% endif %}">{{ job.get_status_display }}</span></td><td>{{ job.applicant_count }}</td>
+                        <td><div class="recruiter-actions"><a href="{% url 'recruiter_job_detail' job.id %}">View</a><a href="{% url 'recruiter_job_edit' job.id %}">Edit</a><a href="{% url 'recruiter_applications' job.id %}">Applicants</a>
+                            <form method="post" action="{% url 'recruiter_job_toggle_status' job.id %}">{% csrf_token %}<button class="recruiter-btn {% if job.status == 'OPEN' %}danger{% else %}secondary{% endif %}" type="submit">{% if job.status == 'OPEN' %}Close{% else %}Open{% endif %}</button></form>
+                        </div></td>
+                    </tr>
+                {% endfor %}</tbody>
+            </table></div>
+        {% else %}
+            <div class="recruiter-empty"><strong>No jobs yet</strong>Your job list will appear here after you create a job.<p><a class="recruiter-btn" href="{% url 'recruiter_job_create' %}">Create job</a></p></div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
